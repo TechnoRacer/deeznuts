@@ -1,0 +1,1938 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAD Kotlin Practical Cheat Sheet</title>
+
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #101522;
+  color: #edf2ff;
+}
+header {
+  background: #19243a;
+  padding: 25px;
+  text-align: center;
+  border-bottom: 2px solid #394b70;
+}
+header h1 { margin: 0 0 10px; color: #7db4ff; }
+header p { color: #bdc9df; }
+.container { max-width: 1100px; margin: auto; padding: 20px; }
+#search {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #506080;
+  background: #1b263b;
+  color: white;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 25px;
+}
+.nav a {
+  text-decoration: none;
+  color: white;
+  background: #293b5c;
+  padding: 9px 13px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.experiment {
+  background: #19243a;
+  border: 1px solid #354663;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+.experiment h2 { color: #82b8ff; }
+.goal { color: #c1cde0; line-height: 1.6; }
+.file {
+  background: #25334c;
+  border-radius: 8px;
+  margin-top: 15px;
+  overflow: hidden;
+}
+.file-head {
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: #304363;
+}
+.file-head strong { color: #d9e7ff; }
+button {
+  background: #4e8cff;
+  color: white;
+  border: 0;
+  padding: 8px 13px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover { background: #286bdc; }
+pre {
+  margin: 0;
+  padding: 15px;
+  overflow-x: auto;
+  color: #d9e5f8;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre;
+}
+.note {
+  background: #382f20;
+  color: #ffdda0;
+  padding: 12px;
+  border-radius: 7px;
+  margin-top: 15px;
+  line-height: 1.5;
+}
+footer {
+  text-align: center;
+  color: #9eabc2;
+  padding: 25px;
+}
+.hidden { display: none; }
+</style>
+</head>
+
+<body>
+<header>
+  <h1>MAD Practical Exam Cheat Sheet</h1>
+  <p>Kotlin + Android Studio + Jetpack Compose</p>
+  <p>Questions 1–10 | Complete Code Reference</p>
+</header>
+
+<div class="container">
+
+<input id="search" type="text"
+placeholder="Search experiments, code, concepts..."
+oninput="searchExperiments()">
+
+<div class="nav">
+  <a href="#q1">Q1 Food Ordering</a>
+  <a href="#q2">Q2 Announcements</a>
+  <a href="#q3">Q3 Shopping Navigation</a>
+  <a href="#q4">Q4 Contacts</a>
+  <a href="#q5">Q5 Background Sync</a>
+  <a href="#q6">Q6 Shopping Basic</a>
+  <a href="#q7">Q7 Reading List</a>
+  <a href="#q8">Q8 Comments API</a>
+  <a href="#q9">Q9 Feedback</a>
+  <a href="#q10">Q10 Tip Calculator</a>
+</div>
+
+<!-- QUESTION 1 -->
+<section class="experiment" id="q1">
+<h2>Question 1 — Food Ordering App</h2>
+<p class="goal">
+Create a food ordering application with a menu screen and order summary
+screen. Use Explicit Intents to pass order information between Activities
+and display a simple animation.
+</p>
+
+<div class="file">
+<div class="file-head">
+<strong>MainActivity.kt</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.foodordering
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            var food by remember { mutableStateOf("Pizza") }
+            var price by remember { mutableStateOf(150) }
+
+            Column(
+                modifier = Modifier.padding(24.dp)
+            ) {
+                Text("Food Ordering App",
+                    style = MaterialTheme.typography.headlineMedium)
+
+                Button(onClick = {
+                    food = "Pizza"
+                    price = 150
+                }) {
+                    Text("Pizza - Rs.150")
+                }
+
+                Button(onClick = {
+                    food = "Burger"
+                    price = 100
+                }) {
+                    Text("Burger - Rs.100")
+                }
+
+                Button(onClick = {
+                    food = "Sandwich"
+                    price = 80
+                }) {
+                    Text("Sandwich - Rs.80")
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text("Selected: $food")
+                Text("Price: Rs.$price")
+
+                Button(onClick = {
+                    val intent = Intent(
+                        this@MainActivity,
+                        SummaryActivity::class.java
+                    )
+                    intent.putExtra("food", food)
+                    intent.putExtra("price", price)
+                    startActivity(intent)
+                }) {
+                    Text("Place Order")
+                }
+            }
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>SummaryActivity.kt</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.foodordering
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+class SummaryActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val food = intent.getStringExtra("food") ?: "Unknown"
+        val price = intent.getIntExtra("price", 0)
+
+        setContent {
+            var visible by remember { mutableStateOf(false) }
+
+            LaunchedEffect(Unit) {
+                visible = true
+            }
+
+            Column(
+                modifier = Modifier.padding(24.dp)
+            ) {
+                AnimatedVisibility(
+                    visible = visible,
+                    enter = fadeIn() + slideInVertically()
+                ) {
+                    Column {
+                        Text(
+                            "Order Summary",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Text("Food: $food")
+                        Text("Price: Rs.$price")
+                        Text("Order Placed Successfully!")
+                    }
+                }
+
+                Button(onClick = { finish() }) {
+                    Text("Back")
+                }
+            }
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>AndroidManifest.xml — Activity declaration</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>&lt;application
+    ... &gt;
+
+    &lt;activity
+        android:name=".SummaryActivity"
+        android:exported="false" /&gt;
+
+    &lt;activity
+        android:name=".MainActivity"
+        android:exported="true"&gt;
+        &lt;intent-filter&gt;
+            &lt;action android:name="android.intent.action.MAIN" /&gt;
+            &lt;category android:name="android.intent.category.LAUNCHER" /&gt;
+        &lt;/intent-filter&gt;
+    &lt;/activity&gt;
+
+&lt;/application&gt;</code></pre>
+</div>
+
+<div class="note">
+<b>Remember:</b><br>
+Intent() opens another Activity.<br>
+putExtra() sends data.<br>
+getStringExtra() receives text.<br>
+getIntExtra() receives an integer.<br>
+AnimatedVisibility() displays the animation.
+</div>
+</section>
+
+<!-- QUESTION 2 -->
+<section class="experiment" id="q2">
+<h2>Question 2 — Announcement Feed</h2>
+<p class="goal">
+Display different announcement types using a data source and reusable
+Composable functions instead of individually hardcoding each item.
+</p>
+
+<div class="file">
+<div class="file-head">
+<strong>MainActivity.kt</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.announcement
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+data class Announcement(
+    val title: String,
+    val message: String,
+    val type: String
+)
+
+val announcements = listOf(
+    Announcement(
+        "College Notice",
+        "College reopens on Monday.",
+        "notice"
+    ),
+    Announcement(
+        "Urgent Alert",
+        "Submit your record today!",
+        "urgent"
+    ),
+    Announcement(
+        "Image Announcement",
+        "Annual Day Celebration",
+        "image"
+    ),
+    Announcement(
+        "Register Now",
+        "Click the button to register.",
+        "action"
+    )
+)
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            AnnouncementScreen()
+        }
+    }
+}
+
+@Composable
+fun AnnouncementScreen() {
+    LazyColumn(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        items(announcements) { item ->
+            AnnouncementCard(item)
+        }
+    }
+}
+
+@Composable
+fun AnnouncementCard(item: Announcement) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(item.title)
+            Text(item.message)
+
+            when (item.type) {
+                "urgent" -> Text("URGENT ALERT!")
+                "image" -> Text("[Image Placeholder]")
+                "action" -> Button(
+                    onClick = {}
+                ) {
+                    Text("Register")
+                }
+                else -> Text("General Notice")
+            }
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="note">
+<b>Remember:</b><br>
+data class stores announcement information.<br>
+listOf() creates the data source.<br>
+LazyColumn displays a scrollable list.<br>
+items() loops through the data.<br>
+when() checks the announcement type.<br>
+Composable functions create reusable UI.
+</div>
+</section>
+
+<!-- QUESTION 3 -->
+<section class="experiment" id="q3">
+<h2>Question 3 — Shopping App Using Navigation Compose</h2>
+<p class="goal">
+Display a product list and navigate to a Product Detail screen.
+Pass the selected product information using Navigation Compose.
+</p>
+
+<div class="file">
+<div class="file-head">
+<strong>MainActivity.kt</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.shoppingnavigation
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
+import androidx.navigation.compose.*
+import androidx.navigation.navArgument
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            ShoppingNavigation()
+        }
+    }
+}
+
+@Composable
+fun ShoppingNavigation() {
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = "products"
+    ) {
+        composable("products") {
+            ProductScreen { id ->
+                navController.navigate("details/$id")
+            }
+        }
+
+        composable(
+            route = "details/{productId}",
+            arguments = listOf(
+                navArgument("productId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { entry ->
+            val id = entry.arguments?.getInt("productId") ?: 1
+            ProductDetailScreen(id) {
+                navController.popBackStack()
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductScreen(onProductClick: (Int) -> Unit) {
+    Column(Modifier.padding(20.dp)) {
+        Text("Shopping Products")
+
+        Button(onClick = { onProductClick(1) }) {
+            Text("Mobile")
+        }
+
+        Button(onClick = { onProductClick(2) }) {
+            Text("Laptop")
+        }
+
+        Button(onClick = { onProductClick(3) }) {
+            Text("Headphones")
+        }
+    }
+}
+
+@Composable
+fun ProductDetailScreen(
+    id: Int,
+    onBack: () -> Unit
+) {
+    val product = when (id) {
+        1 -> "Mobile - Rs.15000"
+        2 -> "Laptop - Rs.50000"
+        3 -> "Headphones - Rs.2000"
+        else -> "Unknown Product"
+    }
+
+    Column(Modifier.padding(20.dp)) {
+        Text(
+            "Product Details",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Text(product)
+
+        Button(onClick = onBack) {
+            Text("Back")
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>build.gradle.kts — Dependency</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>dependencies {
+    implementation("androidx.navigation:navigation-compose:2.9.6")
+}</code></pre>
+</div>
+
+<div class="note">
+<b>Remember:</b><br>
+rememberNavController() creates navigation controller.<br>
+NavHost() manages screens.<br>
+composable() defines a screen.<br>
+navigate() moves to another screen.<br>
+arguments pass product ID.<br>
+popBackStack() returns to previous screen.
+</div>
+</section>
+
+<!-- QUESTION 4 -->
+<section class="experiment" id="q4">
+<h2>Question 4 — Contact Directory</h2>
+<p class="goal">
+Display a scrollable employee list from a data source using a reusable
+row Composable. When a row is tapped, show the employee name in a Snackbar.
+</p>
+
+<div class="file">
+<div class="file-head">
+<strong>MainActivity.kt</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.contactdirectory
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+
+data class Employee(
+    val name: String,
+    val department: String
+)
+
+val employees = listOf(
+    Employee("Arun", "Computer Science"),
+    Employee("Bala", "Mechanical"),
+    Employee("David", "Electronics"),
+    Employee("John", "Civil"),
+    Employee("Kumar", "Information Technology")
+)
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            ContactScreen()
+        }
+    }
+}
+
+@Composable
+fun ContactScreen() {
+    val snackbarHostState = SnackbarHostState()
+    val scope = rememberCoroutineScope()
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) { padding ->
+
+        LazyColumn(
+            modifier = Modifier
+                .padding(padding)
+                .padding(12.dp)
+        ) {
+            items(employees) { employee ->
+
+                EmployeeRow(employee) {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            "Selected: ${employee.name}"
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun EmployeeRow(
+    employee: Employee,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(6.dp)
+            .clickable { onClick() }
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(employee.name)
+            Text(employee.department)
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="note">
+<b>Remember:</b><br>
+Employee is a data class.<br>
+LazyColumn creates the scrollable list.<br>
+EmployeeRow is a reusable Composable.<br>
+clickable() detects a tap.<br>
+SnackbarHostState displays the message.<br>
+rememberCoroutineScope() launches the Snackbar coroutine.
+</div>
+</section>
+
+<script>
+function copyCode(button) {
+  const code = button.closest(".file").querySelector("code").innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    button.innerText = "Copied!";
+    setTimeout(() => button.innerText = "Copy Code", 1500);
+  }).catch(() => {
+    alert("Copy failed. Select the code and copy it manually.");
+  });
+}
+
+function searchExperiments() {
+  const query = document.getElementById("search").value.toLowerCase();
+  document.querySelectorAll(".experiment").forEach(section => {
+    section.classList.toggle(
+      "hidden",
+      !section.innerText.toLowerCase().includes(query)
+    );
+  });
+}
+</script>
+
+<!-- PART 2 WILL CONTINUE HERE -->
+ 
+<!-- QUESTION 5 -->
+<section class="experiment" id="q5">
+<h2>Question 5 — Background Sync using WorkManager</h2>
+
+<p class="goal">
+Create a background synchronization application with Start Sync and
+Cancel Sync buttons. Schedule periodic work every 15 minutes, log the
+current time, and display the WorkManager status.
+</p>
+
+<div class="file">
+<div class="file-head">
+<strong>SyncWorker.kt</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.backgroundsync
+
+import android.content.Context
+import android.util.Log
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+class SyncWorker(
+    context: Context,
+    params: WorkerParameters
+) : Worker(context, params) {
+
+    override fun doWork(): Result {
+
+        val currentTime = SimpleDateFormat(
+            "HH:mm:ss",
+            Locale.getDefault()
+        ).format(Date())
+
+        Log.d("SyncWorker", "Sync performed at $currentTime")
+
+        return Result.success()
+    }
+}</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>MainActivity.kt</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.backgroundsync
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.work.*
+import kotlinx.coroutines.flow.collectLatest
+import java.util.concurrent.TimeUnit
+
+class MainActivity : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+
+            var status by remember {
+                mutableStateOf("Not Started")
+            }
+
+            val workManager = WorkManager.getInstance(this)
+
+            LaunchedEffect(Unit) {
+                workManager
+                    .getWorkInfosForUniqueWorkFlow("periodic_sync")
+                    .collectLatest { workInfos ->
+
+                        status = if (workInfos.isEmpty()) {
+                            "Not Started"
+                        } else {
+                            workInfos.first().state.name
+                        }
+                    }
+            }
+
+            Column(
+                modifier = Modifier.padding(24.dp)
+            ) {
+
+                Text(
+                    "Background Sync",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+
+                Text("Status: $status")
+
+                Button(onClick = {
+
+                    val request =
+                        PeriodicWorkRequestBuilder<SyncWorker>(
+                            15, TimeUnit.MINUTES
+                        ).build()
+
+                    workManager.enqueueUniquePeriodicWork(
+                        "periodic_sync",
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        request
+                    )
+
+                }) {
+                    Text("Start Sync")
+                }
+
+                Button(onClick = {
+
+                    workManager.cancelUniqueWork("periodic_sync")
+
+                }) {
+                    Text("Cancel Sync")
+                }
+            }
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>build.gradle.kts — Dependency</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>dependencies {
+    implementation("androidx.work:work-runtime-ktx:2.10.5")
+}</code></pre>
+</div>
+
+<div class="note">
+<b>Remember:</b><br>
+Worker performs background work.<br>
+doWork() contains the task.<br>
+PeriodicWorkRequestBuilder() schedules repeated work.<br>
+15 minutes is the minimum periodic interval.<br>
+enqueueUniquePeriodicWork() schedules unique work.<br>
+cancelUniqueWork() cancels it.<br>
+WorkInfo.state gives ENQUEUED, RUNNING, SUCCEEDED, or CANCELLED.<br><br>
+<b>Exam note:</b> Periodic work normally remains ENQUEUED between runs.
+The worker's Result.success() does not make periodic work permanently
+SUCCEEDED; it schedules another execution.
+</div>
+</section>
+
+
+<!-- QUESTION 6 -->
+<section class="experiment" id="q6">
+<h2>Question 6 — Shopping App: Product List and Detail</h2>
+
+<p class="goal">
+Create a basic shopping application. Display products in a list and
+show the selected product details when the user taps a product.
+This version uses Compose state instead of Navigation Compose.
+</p>
+
+<div class="file">
+<div class="file-head">
+<strong>MainActivity.kt</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.basicshopping
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+data class Product(
+    val name: String,
+    val price: Int,
+    val description: String
+)
+
+val productList = listOf(
+    Product(
+        "Mobile",
+        15000,
+        "Android smartphone with 128GB storage"
+    ),
+    Product(
+        "Laptop",
+        50000,
+        "Laptop with 16GB RAM"
+    ),
+    Product(
+        "Headphones",
+        2000,
+        "Wireless Bluetooth headphones"
+    ),
+    Product(
+        "Smart Watch",
+        3000,
+        "Smart watch with fitness tracking"
+    )
+)
+
+class MainActivity : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            ShoppingApp()
+        }
+    }
+}
+
+@Composable
+fun ShoppingApp() {
+
+    var selectedProduct by remember {
+        mutableStateOf<Product?>(null)
+    }
+
+    if (selectedProduct == null) {
+
+        ProductListScreen { product ->
+            selectedProduct = product
+        }
+
+    } else {
+
+        ProductDetailScreen(
+            product = selectedProduct!!,
+            onBack = {
+                selectedProduct = null
+            }
+        )
+    }
+}
+
+@Composable
+fun ProductListScreen(
+    onProductClick: (Product) -> Unit
+) {
+
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
+
+        Text(
+            "Shopping App",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        LazyColumn {
+
+            items(productList) { product ->
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clickable {
+                            onProductClick(product)
+                        }
+                ) {
+
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+
+                        Text(product.name)
+                        Text("Price: Rs.${product.price}")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductDetailScreen(
+    product: Product,
+    onBack: () -> Unit
+) {
+
+    Column(
+        modifier = Modifier.padding(24.dp)
+    ) {
+
+        Text(
+            "Product Details",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Text("Name: ${product.name}")
+        Text("Price: Rs.${product.price}")
+        Text("Description: ${product.description}")
+
+        Button(onClick = onBack) {
+            Text("Back")
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="note">
+<b>Remember:</b><br>
+Product is a data class.<br>
+productList stores all products.<br>
+LazyColumn displays products.<br>
+clickable() detects product selection.<br>
+mutableStateOf() stores the selected product.<br>
+When selectedProduct changes, Compose displays the detail screen.<br>
+This is basic state-based screen switching, not Navigation Compose.
+</div>
+</section>
+
+
+<!-- QUESTION 7 -->
+<section class="experiment" id="q7">
+<h2>Question 7 — Reading List using Room and DataStore</h2>
+
+<p class="goal">
+Create a reading list application that stores books in a Room database.
+Each book has a title and author. Allow deletion and sorting by Title A-Z
+or Newest First. Save the selected sorting preference using DataStore.
+</p>
+
+<div class="file">
+<div class="file-head">
+<strong>Book.kt — Entity</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.readinglist
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "books")
+data class Book(
+
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+
+    val title: String,
+
+    val author: String,
+
+    val timestamp: Long = System.currentTimeMillis()
+)</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>BookDao.kt — Database Operations</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.readinglist
+
+import androidx.room.*
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface BookDao {
+
+    @Insert
+    suspend fun insertBook(book: Book)
+
+    @Delete
+    suspend fun deleteBook(book: Book)
+
+    @Query("SELECT * FROM books ORDER BY title ASC")
+    fun getBooksByTitle(): Flow&lt;List&lt;Book&gt;&gt;
+
+    @Query("SELECT * FROM books ORDER BY timestamp DESC")
+    fun getBooksNewestFirst(): Flow&lt;List&lt;Book&gt;&gt;
+}</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>BookDatabase.kt — Room Database</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.readinglist
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+
+@Database(
+    entities = [Book::class],
+    version = 1
+)
+abstract class BookDatabase : RoomDatabase() {
+
+    abstract fun bookDao(): BookDao
+
+    companion object {
+
+        @Volatile
+        private var INSTANCE: BookDatabase? = null
+
+        fun getDatabase(context: Context): BookDatabase {
+
+            return INSTANCE ?: synchronized(this) {
+
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    BookDatabase::class.java,
+                    "reading_database"
+                ).build()
+
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>BookPreferences.kt — DataStore</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.readinglist
+
+import android.content.Context
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+
+private val Context.dataStore by preferencesDataStore(
+    name = "book_settings"
+)
+
+class BookPreferences(private val context: Context) {
+
+    companion object {
+        val SORT_ORDER = stringPreferencesKey("sort_order")
+    }
+
+    val sortOrder: Flow&lt;String&gt; =
+        context.dataStore.data.map { preferences ->
+            preferences[SORT_ORDER] ?: "TITLE"
+        }
+
+    suspend fun saveSortOrder(order: String) {
+        context.dataStore.edit { preferences ->
+            preferences[SORT_ORDER] = order
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>BookViewModel.kt — Logic</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.readinglist
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+
+class BookViewModel(
+    application: Application
+) : AndroidViewModel(application) {
+
+    private val dao = BookDatabase
+        .getDatabase(application)
+        .bookDao()
+
+    private val preferences = BookPreferences(application)
+
+    private val sortOrder = preferences.sortOrder
+
+    val books: StateFlow&lt;List&lt;Book&gt;&gt; =
+        sortOrder.flatMapLatest { order ->
+
+            if (order == "NEWEST") {
+                dao.getBooksNewestFirst()
+            } else {
+                dao.getBooksByTitle()
+            }
+
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
+
+    fun addBook(title: String, author: String) {
+        viewModelScope.launch {
+            dao.insertBook(
+                Book(title = title, author = author)
+            )
+        }
+    }
+
+    fun deleteBook(book: Book) {
+        viewModelScope.launch {
+            dao.deleteBook(book)
+        }
+    }
+
+    fun changeSort(order: String) {
+        viewModelScope.launch {
+            preferences.saveSortOrder(order)
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>MainActivity.kt — User Interface</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>package com.example.readinglist
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
+class MainActivity : ComponentActivity() {
+
+    private val viewModel: BookViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            ReadingScreen(viewModel)
+        }
+    }
+}
+
+@Composable
+fun ReadingScreen(viewModel: BookViewModel) {
+
+    var title by remember { mutableStateOf("") }
+    var author by remember { mutableStateOf("") }
+
+    val books by viewModel.books.collectAsStateWithLifecycle()
+
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
+
+        Text(
+            "My Reading List",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Book Title") }
+        )
+
+        OutlinedTextField(
+            value = author,
+            onValueChange = { author = it },
+            label = { Text("Author") }
+        )
+
+        Button(
+            onClick = {
+                if (title.isNotBlank() && author.isNotBlank()) {
+                    viewModel.addBook(title, author)
+                    title = ""
+                    author = ""
+                }
+            }
+        ) {
+            Text("Add Book")
+        }
+
+        Row {
+            Button(onClick = {
+                viewModel.changeSort("TITLE")
+            }) {
+                Text("Title A-Z")
+            }
+
+            Button(onClick = {
+                viewModel.changeSort("NEWEST")
+            }) {
+                Text("Newest First")
+            }
+        }
+
+        LazyColumn {
+
+            items(books) { book ->
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                ) {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        horizontalArrangement =
+                            Arrangement.SpaceBetween
+                    ) {
+
+                        Column {
+                            Text(book.title)
+                            Text("Author: ${book.author}")
+                        }
+
+                        IconButton(
+                            onClick = {
+                                viewModel.deleteBook(book)
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Delete"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="file">
+<div class="file-head">
+<strong>build.gradle.kts — Required Dependencies</strong>
+<button onclick="copyCode(this)">Copy Code</button>
+</div>
+<pre><code>plugins {
+    id("com.google.devtools.ksp")
+}
+
+dependencies {
+
+    implementation("androidx.room:room-runtime:2.7.2")
+    implementation("androidx.room:room-ktx:2.7.2")
+    ksp("androidx.room:room-compiler:2.7.2")
+
+    implementation(
+        "androidx.datastore:datastore-preferences:1.1.7"
+    )
+
+    implementation(
+        "androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2"
+    )
+
+    implementation(
+        "androidx.lifecycle:lifecycle-runtime-compose:2.9.2"
+    )
+
+    implementation(
+        "androidx.compose.material:material-icons-extended:1.7.8"
+    )
+}</code></pre>
+</div>
+
+<div class="note">
+<b>Remember:</b><br>
+@Entity defines a database table.<br>
+@PrimaryKey defines the unique ID.<br>
+@Dao defines database operations.<br>
+@Insert adds a record.<br>
+@Delete removes a record.<br>
+@Query retrieves records.<br>
+RoomDatabase creates the database.<br>
+DataStore saves the sorting preference.<br>
+StateFlow provides updated book data to the UI.<br>
+flatMapLatest() changes the query based on the selected sorting method.
+</div>
+</section>
+
+<!-- PART 3 WILL CONTINUE HERE -->
+
+<!-- ==================== EXPERIMENT 8 ==================== -->
+<section class="experiment" id="q8">
+    <h2>Experiment 8 — Comments List Using API (Offline Simulation)</h2>
+    <p><strong>Aim:</strong> Display comments with the user's name and email. Show a progress indicator while loading.</p>
+    <p><strong>Offline note:</strong> Since the exam is offline, this version uses a local sample data source instead of making an actual Retrofit API request. The screen behaves like an API-loading screen.</p>
+
+    <h3>MainActivity.kt</h3>
+    <pre><code>package com.example.commentsapp
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+
+data class Comment(
+    val id: Int,
+    val name: String,
+    val email: String
+)
+
+// Local data source for offline demonstration
+object CommentRepository {
+    fun getComments(): List&lt;Comment&gt; {
+        return listOf(
+            Comment(1, "John", "john@gmail.com"),
+            Comment(2, "David", "david@gmail.com"),
+            Comment(3, "Mary", "mary@gmail.com"),
+            Comment(4, "Alex", "alex@gmail.com"),
+            Comment(5, "Peter", "peter@gmail.com")
+        )
+    }
+}
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            CommentsScreen()
+        }
+    }
+}
+
+@Composable
+fun CommentsScreen() {
+    var comments by remember {
+        mutableStateOf(emptyList&lt;Comment&gt;())
+    }
+
+    var isLoading by remember {
+        mutableStateOf(true)
+    }
+
+    // Simulate API loading
+    LaunchedEffect(Unit) {
+        delay(1500)
+        comments = CommentRepository.getComments()
+        isLoading = false
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Comments List",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (isLoading) {
+            CircularProgressIndicator()
+            Text("Loading comments...")
+        } else {
+            LazyColumn {
+                items(comments) { comment ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = comment.name,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Text(text = comment.email)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}</code></pre>
+
+    <h3>Important points to remember</h3>
+    <ul>
+        <li><code>Comment</code> is the data class.</li>
+        <li><code>CommentRepository</code> supplies sample data.</li>
+        <li><code>LaunchedEffect</code> runs the loading operation.</li>
+        <li><code>delay()</code> simulates network waiting time.</li>
+        <li><code>CircularProgressIndicator()</code> displays the loading symbol.</li>
+        <li><code>LazyColumn</code> displays the comments in a scrollable list.</li>
+    </ul>
+
+    <p><strong>Actual API URL in the question:</strong> https://jsonplaceholder.typicode.com/comments</p>
+    <p><strong>Result:</strong> Comments are displayed with their names and email addresses after a simulated loading period.</p>
+</section>
+
+
+<!-- ==================== EXPERIMENT 9 ==================== -->
+<section class="experiment" id="q9">
+    <h2>Experiment 9 — Feedback Collector (Offline Firestore Simulation)</h2>
+    <p><strong>Aim:</strong> Accept a user's name and comment, submit feedback, and display submitted feedback in a scrollable list.</p>
+    <p><strong>Offline note:</strong> This version uses an in-memory list to simulate the real-time Firestore screen. It does not connect to Firebase or permanently store data.</p>
+
+    <h3>MainActivity.kt</h3>
+    <pre><code>package com.example.feedbackapp
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+data class Feedback(
+    val name: String,
+    val comment: String,
+    val timestamp: String
+)
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            FeedbackScreen()
+        }
+    }
+}
+
+@Composable
+fun FeedbackScreen() {
+    var name by remember { mutableStateOf("") }
+    var comment by remember { mutableStateOf("") }
+
+    // In-memory list simulates Firestore updates
+    val feedbackList = remember {
+        mutableStateListOf(
+            Feedback("John", "Good application!", "Sample"),
+            Feedback("Mary", "Very useful.", "Sample")
+        )
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Feedback Collector",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Enter Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = comment,
+            onValueChange = { comment = it },
+            label = { Text("Enter Comment") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Button(
+            onClick = {
+                if (name.isNotBlank() && comment.isNotBlank()) {
+
+                    val currentTime =
+                        SimpleDateFormat(
+                            "dd-MM-yyyy HH:mm",
+                            Locale.getDefault()
+                        ).format(Date())
+
+                    feedbackList.add(
+                        Feedback(
+                            name = name,
+                            comment = comment,
+                            timestamp = currentTime
+                        )
+                    )
+
+                    name = ""
+                    comment = ""
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Submit Feedback")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Submitted Feedback",
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        LazyColumn {
+            items(feedbackList) { feedback ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 5.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        Text(
+                            text = feedback.name,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Text(text = feedback.comment)
+
+                        Text(
+                            text = feedback.timestamp,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            }
+        }
+    }
+}</code></pre>
+
+    <h3>Important points to remember</h3>
+    <ul>
+        <li><code>OutlinedTextField</code> accepts the name and comment.</li>
+        <li><code>mutableStateListOf()</code> stores feedback and updates the UI when an item is added.</li>
+        <li><code>Button</code> submits the feedback.</li>
+        <li><code>isNotBlank()</code> prevents empty submissions.</li>
+        <li><code>SimpleDateFormat</code> creates a display timestamp.</li>
+        <li><code>LazyColumn</code> displays feedback in a scrollable list.</li>
+    </ul>
+
+    <p><strong>Real Firestore concept:</strong> In the actual Firebase version, feedback documents would be added to the <code>feedback</code> collection with a server timestamp, and a snapshot listener would update the list in real time.</p>
+    <p><strong>Result:</strong> Users can submit feedback and immediately see it added to the list.</p>
+</section>
+
+
+<!-- ==================== EXPERIMENT 10 ==================== -->
+<section class="experiment" id="q10">
+    <h2>Experiment 10 — Tip Calculator with Unit and UI Testing</h2>
+    <p><strong>Aim:</strong> Create a tip calculator that accepts a bill amount, allows selection of 10%, 15%, or 20% tip, and displays the tip and total amount.</p>
+
+    <h3>1. TipCalculator.kt — Calculation Logic</h3>
+    <pre><code>package com.example.tipcalculator
+
+class TipCalculator {
+
+    fun calculateTip(
+        amount: Double,
+        tipPercent: Int
+    ): Double {
+        return amount * tipPercent / 100.0
+    }
+
+    fun calculateTotal(
+        amount: Double,
+        tipPercent: Int
+    ): Double {
+        return amount + calculateTip(amount, tipPercent)
+    }
+}</code></pre>
+
+    <h3>2. MainActivity.kt — User Interface</h3>
+    <pre><code>package com.example.tipcalculator
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import java.util.Locale
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            TipScreen()
+        }
+    }
+}
+
+@Composable
+fun TipScreen() {
+    var amount by remember { mutableStateOf("") }
+    var tipPercent by remember { mutableIntStateOf(10) }
+
+    var tip by remember { mutableDoubleStateOf(0.0) }
+    var total by remember { mutableDoubleStateOf(0.0) }
+
+    val calculator = remember { TipCalculator() }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+    ) {
+        Text(
+            text = "Tip Calculator",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = amount,
+            onValueChange = { amount = it },
+            label = { Text("Bill Amount") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Select Tip Percentage")
+
+        Row {
+            listOf(10, 15, 20).forEach { percent ->
+                Row {
+                    RadioButton(
+                        selected = tipPercent == percent,
+                        onClick = { tipPercent = percent }
+                    )
+                    Text(
+                        text = "$percent%",
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Button(
+            onClick = {
+                val bill = amount.toDoubleOrNull() ?: 0.0
+
+                tip = calculator.calculateTip(
+                    bill,
+                    tipPercent
+                )
+
+                total = calculator.calculateTotal(
+                    bill,
+                    tipPercent
+                )
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Calculate")
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "Tip: Rs.${String.format(Locale.US, "%.2f", tip)}"
+        )
+
+        Text(
+            text = "Total: Rs.${String.format(Locale.US, "%.2f", total)}"
+        )
+    }
+}</code></pre>
+
+    <h3>3. TipCalculatorTest.kt — Unit Testing</h3>
+    <p>This file goes inside <code>app/src/test/java/com/example/tipcalculator/</code>.</p>
+    <pre><code>package com.example.tipcalculator
+
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+class TipCalculatorTest {
+
+    private val calculator = TipCalculator()
+
+    @Test
+    fun calculateTip_isCorrect() {
+        val result = calculator.calculateTip(100.0, 10)
+
+        assertEquals(10.0, result, 0.001)
+    }
+
+    @Test
+    fun calculateTotal_isCorrect() {
+        val result = calculator.calculateTotal(100.0, 10)
+
+        assertEquals(110.0, result, 0.001)
+    }
+
+    @Test
+    fun calculateFifteenPercentTip_isCorrect() {
+        val result = calculator.calculateTip(200.0, 15)
+
+        assertEquals(30.0, result, 0.001)
+    }
+}</code></pre>
+
+    <h3>4. TipScreenTest.kt — Compose UI Testing</h3>
+    <p>This file goes inside <code>app/src/androidTest/java/com/example/tipcalculator/</code>.</p>
+    <pre><code>package com.example.tipcalculator
+
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createComposeRule
+import org.junit.Rule
+import org.junit.Test
+
+class TipScreenTest {
+
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
+    @Test
+    fun tipCalculator_displaysCorrectResult() {
+
+        composeTestRule.setContent {
+            TipScreen()
+        }
+
+        composeTestRule
+            .onNodeWithText("Bill Amount")
+            .performTextInput("100")
+
+        composeTestRule
+            .onNodeWithText("Calculate")
+            .performClick()
+
+        composeTestRule
+            .onNodeWithText("Tip: Rs.10.00")
+            .assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithText("Total: Rs.110.00")
+            .assertIsDisplayed()
+    }
+}</code></pre>
+
+    <h3>5. Deliberately Introduce a Bug</h3>
+    <p>To demonstrate a failing test, temporarily change the calculation line in <code>TipCalculator.kt</code>:</p>
+    <pre><code>// WRONG CODE — deliberate bug
+return amount * tipPercent / 10.0</code></pre>
+
+    <p><strong>Expected failure:</strong> For a bill of Rs.100 and a 10% tip, the buggy code calculates Rs.100 instead of Rs.10. The unit test fails.</p>
+
+    <h3>6. Fix the Bug</h3>
+    <p>Restore the correct calculation:</p>
+    <pre><code>// CORRECT CODE
+return amount * tipPercent / 100.0</code></pre>
+
+    <p>Run the tests again. The expected results are:</p>
+    <ul>
+        <li><code>calculateTip_isCorrect()</code> — Passed</li>
+        <li><code>calculateTotal_isCorrect()</code> — Passed</li>
+        <li><code>calculateFifteenPercentTip_isCorrect()</code> — Passed</li>
+        <li><code>tipCalculator_displaysCorrectResult()</code> — Passed</li>
+    </ul>
+
+    <h3>7. Required Testing Dependencies</h3>
+    <p>Add these dependencies to the app-level <code>build.gradle.kts</code>. Keep your existing Compose dependencies too.</p>
+    <pre><code>dependencies {
+    testImplementation("junit:junit:4.13.2")
+
+    androidTestImplementation(
+        "androidx.compose.ui:ui-test-junit4"
+    )
+
+    debugImplementation(
+        "androidx.compose.ui:ui-test-manifest"
+    )
+}</code></pre>
+
+    <h3>Important points to remember</h3>
+    <ul>
+        <li><strong>TipCalculator.kt:</strong> Contains the calculation logic separately from the UI.</li>
+        <li><strong>TipScreen():</strong> Contains the visual components and user interaction.</li>
+        <li><strong>RadioButton:</strong> Selects the tip percentage.</li>
+        <li><strong>Unit test:</strong> Checks the calculation methods.</li>
+        <li><strong>UI test:</strong> Simulates user input and checks the displayed result.</li>
+        <li><strong>Bug demonstration:</strong> Incorrect division makes the test fail.</li>
+        <li><strong>Bug fixing:</strong> Correcting the formula makes the test pass.</li>
+    </ul>
+
+    <p><strong>Result:</strong> A tip calculator is developed with separate calculation logic, and its functionality is verified using unit tests and Compose UI tests.</p>
+</section>
+
+</body>
+</html>
+
+</body>
+</html>
